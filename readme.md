@@ -1,7 +1,6 @@
 # Intel RealSense Cross Platform API
 
 Platform | Build Status |
--------- | ------------ |
 Linux and OS X | x |
 Windows | x |
 
