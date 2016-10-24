@@ -1,6 +1,7 @@
 # Intel® RealSense™ Cross Platform API
 
-![License]
+![License] [license-image]
+[license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
 
 Platform | Build Status |
 -------- | ------------ |
