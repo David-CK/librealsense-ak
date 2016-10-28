@@ -1,0 +1,5 @@
+VAR = $(addprefix obj/, $(addsuffix .o, $(basename $(notdir $(wildcard include/librealsense/*.hpp)))))
+
+all:
+	@echo ${VAR}
+

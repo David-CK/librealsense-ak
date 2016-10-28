@@ -1,3 +1,5 @@
+//#include <vector>
+
 namespace rs
 {
     class context

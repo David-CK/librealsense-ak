@@ -1,3 +1,5 @@
+#include <cstddef>
+
 struct rs_device
 {
     virtual const char *                    get_name() const = 0;
