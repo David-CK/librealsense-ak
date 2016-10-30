@@ -1,4 +1,4 @@
-CXXFLAGS := -std=c++11
+CXXFLAGS := -std=c++11 -fPIC
 
 OBJECTS = $(notdir $(basename $(wildcard src/*.cpp)))
 OBJECTS := $(addprefix obj/, $(addsuffix .o, $(OBJECTS)))
@@ -10,9 +10,9 @@ EXAMPLES := $(addprefix bin/, $(notdir $(basename $(EXAMPLES))))
 # Aliases for convenience
 all: examples $(EXAMPLES)
 
-install:
+#install:
 
-uninstall:
+#uninstall:
 
 clean:
 	rm -rf obj
@@ -26,17 +26,23 @@ obj lib bin:
 
 
 bin/c-%: examples/c-%.c lib/librealsense.so | bin
-	$(CC) $< -o $@
+	$(CC) $< -Iinclude -Llib -lrealsense -o $@
 
 bin/cpp-%: examples/cpp-%.cpp lib/librealsense.so | bin
-	$(CXX) $< -o $@
+	$(CXX) $< -Iinclude -Llib -lrealsense -o $@
 
 lib/librealsense.so: $(OBJECTS) | lib
+#-I
+	#$(CXX) -Iinclude -shared $(OBJECTS) -o $@
 	$(CXX) -shared $(OBJECTS) -o $@
 
 obj/%.o: src/%.cpp | obj
-	$(CXX) $< $(CXXFLAGS) -c -o $@
+#-I
+	$(CXX) $< -Iinclude $(CXXFLAGS) -c -o $@
+	#$(CXX) $< $(CXXFLAGS) -c -o $@
 
-cpp-capture: examples/cpp-capture.cpp
-	g++ examples/cpp-capture.cpp `pkg-config --cflags --libs glfw3 glu gl` -o rm/cpp-capture
+#LD_LIBRARY_PATH=lib ./bin/c-tutorial-1-depth
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./
+#cpp-capture: examples/cpp-capture.cpp
+#	g++ examples/cpp-capture.cpp `pkg-config --cflags --libs glfw3 glu gl` -o rm/cpp-capture
 
