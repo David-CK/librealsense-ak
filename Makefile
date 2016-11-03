@@ -33,13 +33,13 @@ bin/cpp-%: examples/cpp-%.cpp lib/librealsense.so | bin
 
 lib/librealsense.so: $(OBJECTS) | lib
 #-I
-	#$(CXX) -Iinclude -shared $(OBJECTS) -o $@
+#	#$(CXX) -Iinclude -shared $(OBJECTS) -o $@
 	$(CXX) -shared $(OBJECTS) -o $@
 
 obj/%.o: src/%.cpp | obj
 #-I
 	$(CXX) $< -Iinclude $(CXXFLAGS) -c -o $@
-	#$(CXX) $< $(CXXFLAGS) -c -o $@
+#	#$(CXX) $< $(CXXFLAGS) -c -o $@
 
 #LD_LIBRARY_PATH=lib ./bin/c-tutorial-1-depth
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./
