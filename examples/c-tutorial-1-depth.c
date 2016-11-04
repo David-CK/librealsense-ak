@@ -6,7 +6,7 @@ Copyright(c) 2015 Intel Corporation. All Rights Reserved. */
 \*************************************************/
 
 /* First include the librealsense C header file */
-#include "librealsense/rs.h"
+#include <librealsense/rs.h>
 #include <stdlib.h>
 #include <stdio.h>
 
