@@ -1,3 +1,4 @@
+/*
 #include <cstddef>
 
 struct rs_device
@@ -10,4 +11,5 @@ struct rs_context
     virtual size_t                          get_device_count() const = 0;
     virtual rs_device *                     get_device(int index) const = 0;
 };
+*/
 

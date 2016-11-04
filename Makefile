@@ -14,7 +14,8 @@ all: examples $(EXAMPLES)
 
 #uninstall:
 
-clean:
+c:
+#clean:
 	rm -rf obj
 	rm -rf lib
 	rm -rf bin
@@ -23,6 +24,9 @@ obj lib bin:
 	mkdir obj
 	mkdir lib
 	mkdir bin
+e:
+	LD_LIBRARY_PATH=lib/
+	./bin/c-tutorial-1-depth
 
 
 bin/c-%: examples/c-%.c lib/librealsense.so | bin

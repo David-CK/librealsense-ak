@@ -1,5 +1,7 @@
+#include "../include/librealsense/rs.h"
+//#include <vector>
+/*
 #include "../include/librealsense/rscore.hpp"
-#include <vector>
 #include <memory>
 
 namespace rsimpl
@@ -14,4 +16,5 @@ namespace rsimpl
         const static_device_info            info;
     };
 }
+*/
 

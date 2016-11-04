@@ -25,7 +25,7 @@ void check_error()
 int main()
 {
     /* Create a context object. This object owns the handles to all connected realsense devices. */
-    rs_create_context(RS_API_VERSION, &e);
+    rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();
     printf("There are %d connected RealSense devices.\n", rs_get_device_count(&e));
     check_error();

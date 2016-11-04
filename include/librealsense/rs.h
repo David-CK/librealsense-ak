@@ -20,13 +20,14 @@ extern "C" {
 /* Return version in "X.Y.Z" formate */
 #define RS_API_VERSION_STR (VAR_ARG_STRING(RS_API_MAJOR_VERSION.RS_API_MINOR_VERSION.RS_API_PATCH_VERSION))
 
+typedef struct rs_context rs_context;
 typedef struct rs_error rs_error;
 
 const char * rs_get_failed_function  (const rs_error * error);
 const char * rs_get_failed_args      (const rs_error * error);
 const char * rs_get_error_message    (const rs_error * error);
 
-void rs_create_context(int api_version, rs_error ** error);//CK
+rs_context * rs_create_context(int api_version, rs_error ** error);
 int rs_get_device_count(rs_error ** error);//CK
 void rs_get_device(rs_error ** error);//CK
 const char * rs_get_device_name(rs_error ** error);
