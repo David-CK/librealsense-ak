@@ -1,8 +1,9 @@
 #include "../include/librealsense/rs.h"
-//#include <vector>
-/*
 #include "../include/librealsense/rscore.hpp"
+#include <sstream>
+/*
 #include <memory>
+//#include <vector>
 
 namespace rsimpl
 {

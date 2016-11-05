@@ -4,25 +4,6 @@
 
 //#include <array>
 //#include <string>
-//#include "context.h"
-#include <stdio.h>
-
-void ars_create_context(void)
-{
-    printf("hello realsense!\n");
-}
-*/
-
-/*
-size_t rs_context_base::get_device_count() const
-{
-    //return devices.size();
-}
-
-rs_device* rs_context_base::get_device(int index) const
-{
-    //return devices[index].get();
-}
 */
 
 #include "uvc.h"
@@ -32,7 +13,18 @@ rs_context_base::rs_context_base()
     rsimpl::uvc::create_context();
 }
 
+rs_context* rs_context_base::instance = nullptr;
 rs_context* rs_context_base::acquire_instance()
 {
-    new rs_context_base();
+    instance = new rs_context_base();
+    return instance;
+}
+size_t rs_context_base::get_device_count() const
+{
+    return 10;
+    //return devices.size();
+}
+rs_device* rs_context_base::get_device(int index) const
+{
+    //return devices[index].get();
 }

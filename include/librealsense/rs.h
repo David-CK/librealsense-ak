@@ -21,11 +21,25 @@ extern "C" {
 #define RS_API_VERSION_STR (VAR_ARG_STRING(RS_API_MAJOR_VERSION.RS_API_MINOR_VERSION.RS_API_PATCH_VERSION))
 
 typedef struct rs_context rs_context;
+typedef struct rs_device rs_device;
 typedef struct rs_error rs_error;
 
 rs_context * rs_create_context(int api_version, rs_error ** error);
-int rs_get_device_count(rs_error ** error);
-void rs_get_device(rs_error ** error);
+/**
+ * determine number of connected devices
+ * \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+ * \return            the count of devices
+ */
+int rs_get_device_count(const rs_context * context, rs_error ** error);
+
+/**
+ * retrieve connected device by index
+ * \param[in] index   the zero based index of device to retrieve
+ * \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+ * \return            the requested device
+ */
+rs_device * rs_get_device(rs_context * context, int index, rs_error ** error);
+
 const char * rs_get_device_name(rs_error ** error);
 const char * rs_get_device_serial(rs_error ** error);
 const char * rs_get_device_firmware_version(rs_error ** error);

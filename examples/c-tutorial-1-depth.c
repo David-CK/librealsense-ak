@@ -27,12 +27,12 @@ int main()
     /* Create a context object. This object owns the handles to all connected realsense devices. */
     rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();
-    printf("There are %d connected RealSense devices.\n", rs_get_device_count(&e));
+    printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
     check_error();
-    if (rs_get_device_count(&e) == 0) return EXIT_FAILURE;
+    if (rs_get_device_count(ctx, &e) == 0) return EXIT_FAILURE;
 
     /* This tutorial will access only a single device, but it is trivial to extend to multiple devices */
-    rs_get_device(&e);
+    rs_device * dev = rs_get_device(ctx, 0, &e);
     check_error();
     printf("\nUsing device 0, an %s\n", rs_get_device_name(&e));
     check_error();
