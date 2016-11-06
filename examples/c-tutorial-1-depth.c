@@ -34,11 +34,11 @@ int main()
     /* This tutorial will access only a single device, but it is trivial to extend to multiple devices */
     rs_device * dev = rs_get_device(ctx, 0, &e);
     check_error();
-    printf("\nUsing device 0, an %s\n", rs_get_device_name(&e));
+    printf("\nUsing device 0, an %s\n", rs_get_device_name(dev, &e));
     check_error();
-    printf("    Serial number: %s\n", rs_get_device_serial(&e));
+    printf("    Serial number: %s\n", rs_get_device_serial(dev, &e));
     check_error();
-    printf("    Firmware version: %s\n", rs_get_device_firmware_version(&e));
+    printf("    Firmware version: %s\n", rs_get_device_firmware_version(dev, &e));
     check_error();
     return 0;
 }

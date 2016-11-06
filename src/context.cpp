@@ -10,7 +10,10 @@
 #include "context.h"
 rs_context_base::rs_context_base()
 {
-    rsimpl::uvc::create_context();
+    //rsimpl::uvc::create_context();
+    for(auto device : rsimpl::uvc::query_devices())
+    {
+    }
 }
 
 rs_context* rs_context_base::instance = nullptr;

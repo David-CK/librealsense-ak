@@ -20,6 +20,16 @@ extern "C" {
 /* Return version in "X.Y.Z" format */
 #define RS_API_VERSION_STR (VAR_ARG_STRING(RS_API_MAJOR_VERSION.RS_API_MINOR_VERSION.RS_API_PATCH_VERSION))
 
+typedef enum rs_log_severity {
+    RS_LOG_SEVERITY_DEBUG, /* Detailed information about ordinary operations */
+    RS_LOG_SEVERITY_INFO,  /* Terse information about ordinary operations */
+    RS_LOG_SEVERITY_WARN,  /* Indication of possible failure */
+    RS_LOG_SEVERITY_ERROR, /* Indication of definite failure */
+    RS_LOG_SEVERITY_FATAL, /* Indication of unrecoverable failure */
+    RS_LOG_SEVERITY_NONE,  /* No logging will occur */
+    RS_LOG_SEVERITY_COUNT
+} rs_log_serverity;
+
 typedef struct rs_context rs_context;
 typedef struct rs_device rs_device;
 typedef struct rs_error rs_error;
@@ -40,9 +50,24 @@ int rs_get_device_count(const rs_context * context, rs_error ** error);
  */
 rs_device * rs_get_device(rs_context * context, int index, rs_error ** error);
 
-const char * rs_get_device_name(rs_error ** error);
-const char * rs_get_device_serial(rs_error ** error);
-const char * rs_get_device_firmware_version(rs_error ** error);
+/**
+ * retrieve a human readable device model string
+ * \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+ * \return            the model string, such as "Intel Realsense F200" or "Intel Realsense R200"
+ */
+const char * rs_get_device_name(const rs_device * device, rs_error ** error);
+/**
+ * retrieve the unique serial number of the device
+ * \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+ * \return            the serial number, in a format specific to the device model
+ */
+const char * rs_get_device_serial(const rs_device * device, rs_error ** error);
+/**
+ * retrieve the version of the firmware currently installed on the device
+ * \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+ * \return            firmware version string, in a format is specific to device model
+ */
+const char * rs_get_device_firmware_version(const rs_device * device, rs_error ** error);
 int rs_get_api_version();
 
 const char * rs_get_failed_function  (const rs_error * error);

@@ -1,4 +1,5 @@
 #include "types.h"
+//#include "uvc.h"
 
 struct rs_context_base : rs_context
 {

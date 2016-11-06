@@ -31,14 +31,20 @@ rs_device * rs_get_device(rs_context * context, int index, rs_error ** error)
     VALIDATE_RANGE(index, 0, (int)context->get_device_count()-1);
     return context->get_device(index);
 }
-const char * rs_get_device_name(rs_error ** error)
+const char * rs_get_device_name(const rs_device * device, rs_error ** error)
 {
+    VALIDATE_NOT_NULL(device);
+    return device->get_name();
 }
-const char * rs_get_device_serial(rs_error ** error)
+const char * rs_get_device_serial(const rs_device * device, rs_error ** error)
 {
+    VALIDATE_NOT_NULL(device);
+    return device->get_serial();
 }
-const char * rs_get_device_firmware_version(rs_error ** error)
+const char * rs_get_device_firmware_version(const rs_device * device, rs_error ** error)
 {
+    VALIDATE_NOT_NULL(device);
+    return device->get_firmware_version();
 }
 // Verify  and provide API version encoded as integer value
 int rs_get_api_version()
