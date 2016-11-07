@@ -40,6 +40,7 @@ namespace rsimpl
             while(std::getline(modules,modulesline) && !module_found)
             {
                 module_found = std::regex_match(modulesline, match, regex);
+                printf(">>>>module_found\n");
             }
 
             if(!module_found)
@@ -59,14 +60,21 @@ namespace rsimpl
 
                 // Resolve a pathname to ignore virtual video devices
                 std::string path = "/sys/class/video4linux/" + name;
+                printf(">>>>path = %s\n", path.c_str());
                 char buff[PATH_MAX];
                 ssize_t len = ::readlink(path.c_str(), buff, sizeof(buff)-1);
+                printf(">>>>len = %ld\n", len);
                 if (len != -1)
                 {
                     buff[len] = '\0';
+                    printf(">>>>buff= %s\n", buff);
                     std::string real_path = std::string(buff);
+                    printf("find = %ld\n", real_path.find("virtual"));
                     if (real_path.find("virtual") != std::string::npos)
+                    {
+                        printf(">>>>continue\n");
                         continue;
+                    }
                 }
 
                 try
@@ -76,6 +84,7 @@ namespace rsimpl
                 }
                 catch(const std::exception & e)
                 {
+                    printf(">>>>Not a USB video device\n");
                     LOG_INFO("Not a USB video device: " << e.what());
                 }
             }
