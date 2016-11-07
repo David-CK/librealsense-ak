@@ -6,9 +6,40 @@
 #include <regex>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 //#include <fcntl.h>
 //#include <sstream>
+
+//inc
+#include <linux/usb/video.h>
+#include <linux/uvcvideo.h>
+#include <linux/videodev2.h>
+//#include <libusb.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+
+#include <algorithm>
+#include <functional>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <thread>
+
+#include <utility>
+#include <chrono>
+#include <cstring>
+#include <unistd.h>
+#include <limits.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+#include <string>
+#include <iostream>
+//inc
 
 namespace rsimpl
 {
@@ -18,11 +49,115 @@ namespace rsimpl
         //{
             //return std::make_shared<context>();
         //}
+        static void throw_error(const char * s)
+        {
+            std::ostringstream ss;
+            ss << s << " error " << errno << ", " << strerror(errno);
+            throw std::runtime_error(ss.str());
+        }
+
+        static int xioctl(int fh, int request, void *arg)
+        {
+            int r;
+            do {
+                r = ioctl(fh, request, arg);
+            } while (r < 0 && errno == EINTR);
+            return r;
+        }
         struct subdevice
         {
             std::string dev_name;
+            int busnum, devnum, parent_devnum;
+            int vid, pid, mi;
+            int fd;
             subdevice(const std::string & name) : dev_name("/dev/" + name)
             {
+                struct stat st;
+                if(stat(dev_name.c_str(), &st) < 0)
+                {
+                    std::ostringstream ss; ss << "Cannot identify '" << dev_name << "': " << errno << ", " << strerror(errno);
+                    throw std::runtime_error(ss.str());
+                }
+                if(!S_ISCHR(st.st_mode)) throw std::runtime_error(dev_name + " is no device");
+                std::ostringstream ss; ss << "/sys/dev/char/" << major(st.st_rdev) << ":" << minor(st.st_rdev) << "/device/";
+                printf("path = ");//ck
+                std::cout << ss.str() << std::endl;//ck
+                auto path = ss.str();
+                bool good = false;
+                for(int i=0; i<=3; ++i)
+                {
+                    std::cout << path << std::endl;//ck
+                                printf(">>>>%d-%d-%d-%d-\n", i, busnum, devnum, parent_devnum);
+                    if(std::ifstream(path + "busnum") >> busnum)
+                    {
+                                printf(">>>>%d-%d-%d-%d-\n", i, busnum, devnum, parent_devnum);
+                        if(std::ifstream(path + "devnum") >> devnum)
+                        {
+                                printf(">>>>%d-%d-%d-%d-\n", i, busnum, devnum, parent_devnum);
+                            if(std::ifstream(path + "../devnum") >> parent_devnum)
+                            {
+                                printf("ggggggggggood----\n");
+                                printf(">>>>%d-%d-%d-%d-\n", i, busnum, devnum, parent_devnum);
+                                good = true;
+                                break;
+                            }
+                        }
+                    }
+                    path += "../";
+                }
+                if(!good) throw std::runtime_error("Failed to read busnum/devnum");
+                if(good)
+                {
+                    printf("good----\n");
+                }
+                else {
+                    printf("good good----\n");
+                }
+                std::string modalias;
+                if(!(std::ifstream("/sys/class/video4linux" + name + "/device/modalias") >> modalias))
+                    throw std::runtime_error("Failed to read modalias");
+                if(modalias.size() < 14 || modalias.substr(0,5) != "usb:v" || modalias[9] != 'p')
+                    throw std::runtime_error("Not a usb format modalias");
+                if(!(std::istringstream(modalias.substr(5,4)) >> std::hex >> vid))
+                    throw std::runtime_error("Failed to read vendor ID");
+                if(!(std::istringstream(modalias.substr(10,4)) >> std::hex >> pid))
+                    throw std::runtime_error("Failed to read product ID");
+                if(!(std::ifstream("/sys/class/video4linux/" + name + "/device/bInterfaceNumber") >> std::hex >> mi))
+                    throw std::runtime_error("Failed to read interface number");
+
+                fd = open(dev_name.c_str(), O_RDWR | O_NONBLOCK, 0);
+                if(fd < 0)
+                {
+                    std::ostringstream ss; ss << "Cannot open '" << dev_name << "': " << errno << ", " << strerror(errno);
+                    throw std::runtime_error(ss.str());
+                }
+
+                v4l2_capability cap = {};
+                if(xioctl(fd, VIDIOC_QUERYCAP, &cap) < 0)
+                {
+                    if(errno == EINVAL) throw std::runtime_error(dev_name + " is no V4L2 device");
+                    else throw_error("VIDIOC_QUERYCAP");
+                }
+                if(!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) throw std::runtime_error(dev_name + " is no video capture device");
+                if(!(cap.capabilities & V4L2_CAP_STREAMING)) throw std::runtime_error(dev_name + " does not support streaming I/O");
+
+                v4l2_cropcap cropcap = {};
+                cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                if(xioctl(fd, VIDIOC_CROPCAP, &cropcap) == 0)
+                {
+                    v4l2_crop crop = {};
+                    crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                    crop.c = cropcap.defrect;
+                    if(xioctl(fd, VIDIOC_S_CROP, &crop) < 0)
+                    {
+                        switch (errno)
+                        {
+                        case EINVAL: break;
+                        default: break;
+                        }
+                    }
+                } else {}
+                close(fd);
             }
         };
         struct device
@@ -89,7 +224,21 @@ namespace rsimpl
                 }
             }
             closedir(dir);
+
+            // Note: Subdevices of a given device may not be contiguous. We can test our grouping/sorting logic by calling random_shuffle.
+            // std::random_shuffle(begin(subdevices), end(subdevices));
+
+            // Group subdevices by busnum/devnum
             std::vector<std::shared_ptr<device>> devices;
+            for(auto & sub : subdevices)
+            {
+                for(auto & dev: devices)
+                {
+                    //if(sub->busnum == dev->subdevices[0]->busnum && sub->devnum == dev->subdevices[0]->devnum)
+                    //{
+                    //}
+                }
+            }
             printf("------------------\n");
             return devices;
         }

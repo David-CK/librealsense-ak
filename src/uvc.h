@@ -1,6 +1,9 @@
 #include "types.h"
 #include <memory>
-//#include <functional>
+//inc
+#include <functional>
+#include <memory>
+//inc
 
 namespace rsimpl
 {

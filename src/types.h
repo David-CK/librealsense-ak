@@ -6,6 +6,18 @@
 #include <vector>
 #include <sstream>
 //#include <memory>
+//inc
+#include <cassert>
+#include <cstring>
+#include <vector>
+#include <sstream>
+#include <mutex>
+#include <condition_variable>
+#include <memory>
+#include <atomic>
+#include <map>
+#include <algorithm>
+//inc
 namespace rsimpl
 {
     void log(rs_log_severity severity, const std::string & message);
