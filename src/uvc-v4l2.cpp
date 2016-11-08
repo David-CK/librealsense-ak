@@ -113,8 +113,9 @@ namespace rsimpl
                 else {
                     printf("good good----\n");
                 }
+                printf("2 after close\n");
                 std::string modalias;
-                if(!(std::ifstream("/sys/class/video4linux" + name + "/device/modalias") >> modalias))
+                if(!(std::ifstream("/sys/class/video4linux/" + name + "/device/modalias") >> modalias))
                     throw std::runtime_error("Failed to read modalias");
                 if(modalias.size() < 14 || modalias.substr(0,5) != "usb:v" || modalias[9] != 'p')
                     throw std::runtime_error("Not a usb format modalias");
@@ -157,11 +158,13 @@ namespace rsimpl
                         }
                     }
                 } else {}
-                close(fd);
+                //close(fd);
+                printf("after close\n");
             }
         };
         struct device
         {
+            std::vector<std::unique_ptr<subdevice>> subdevices;
         };
         std::vector<std::shared_ptr<device>> query_devices()
         {
@@ -215,6 +218,7 @@ namespace rsimpl
                 try
                 {
                     std::unique_ptr<subdevice> sub(new subdevice(name));
+                    printf("===============try\n");
                     subdevices.push_back(move(sub));
                 }
                 catch(const std::exception & e)
@@ -232,12 +236,31 @@ namespace rsimpl
             std::vector<std::shared_ptr<device>> devices;
             for(auto & sub : subdevices)
             {
+                bool is_new_device = true;
                 for(auto & dev: devices)
                 {
-                    //if(sub->busnum == dev->subdevices[0]->busnum && sub->devnum == dev->subdevices[0]->devnum)
-                    //{
-                    //}
+                    if(sub->busnum == dev->subdevices[0]->busnum && sub->devnum == dev->subdevices[0]->devnum)
+                    {
+                       dev->subdevices.push_back(move(sub));
+                       is_new_device = false;
+                       break;
+                    }
                 }
+                if(is_new_device)
+                {
+                    if(sub->vid == VID_INTEL_CAMERA && sub->pid == ZR300_FISHEYE_PID)
+                        continue;
+                    devices.push_back(std::make_shared<device>());
+                    devices.back()->subdevices.push_back(move(sub));
+                }
+            }
+
+            for(auto & dev : devices)
+            {
+                std::sort(begin(dev->subdevices), end(dev->subdevices), [](const std::unique_ptr<subdevice> & a, const std::unique_ptr<subdevice> & b)
+                {
+                    return a->mi < b->mi;
+                });
             }
             printf("------------------\n");
             return devices;

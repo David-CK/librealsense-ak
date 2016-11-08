@@ -10,9 +10,11 @@
 #include "context.h"
 rs_context_base::rs_context_base()
 {
+    int i = 0;
     //rsimpl::uvc::create_context();
     for(auto device : rsimpl::uvc::query_devices())
     {
+        printf("i = %d\n", i++);
     }
 }
 
