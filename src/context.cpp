@@ -8,13 +8,23 @@
 
 #include "uvc.h"
 #include "context.h"
+//inc
+#include "iostream"
+//inc
 rs_context_base::rs_context_base()
 {
     int i = 0;
     //rsimpl::uvc::create_context();
     for(auto device : rsimpl::uvc::query_devices())
     {
+        printf("iiiiiiiiiii = %d\n", i);
+        std::cout << get_vendor_id(*device);
+        printf("\n");
+        std::cout << get_product_id(*device);
+        printf("\n");
+        LOG_INFO("UVC device detected with VID = 0x" << std::hex << get_vendor_id(*device) << " PID = 0x" << get_product_id(*device));
         printf("i = %d\n", i++);
+        std::shared_ptr<rs_device> rs_dev;
     }
 }
 

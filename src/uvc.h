@@ -16,6 +16,8 @@ namespace rsimpl
         //std::shared_ptr<context> create_context();
         struct device;
         std::vector<std::shared_ptr<device>> query_devices();
+        int get_vendor_id(const device & device);
+        int get_product_id(const device & device);
     }
 }
 

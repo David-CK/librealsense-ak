@@ -161,11 +161,16 @@ namespace rsimpl
                 //close(fd);
                 printf("after close\n");
             }
+
+            int get_vid() const { return vid; }
+            int get_pid() const { return pid; }
         };
         struct device
         {
             std::vector<std::unique_ptr<subdevice>> subdevices;
         };
+        int get_vendor_id(const device & device) { return device.subdevices[0]->get_vid(); }
+        int get_product_id(const device & device) { return device.subdevices[0]->get_pid(); }
         std::vector<std::shared_ptr<device>> query_devices()
         {
             // Check if the uvcvideo kernel module is loaded
