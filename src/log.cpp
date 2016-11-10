@@ -8,9 +8,9 @@
 namespace rsimpl {
     class logger_type {
     private:
-        rs_log_severity minimum_log_severity = RS_LOG_SEVERITY_DEBUG;//RS_LOG_SEVERITY_NONE;
-        rs_log_severity minimum_console_severity = RS_LOG_SEVERITY_DEBUG;//RS_LOG_SEVERITY_NONE;
-        rs_log_severity minimum_file_severity = RS_LOG_SEVERITY_DEBUG;//RS_LOG_SEVERITY_NONE;
+        rs_log_severity minimum_log_severity = RS_LOG_SEVERITY_NONE;
+        rs_log_severity minimum_console_severity = RS_LOG_SEVERITY_NONE;
+        rs_log_severity minimum_file_severity = RS_LOG_SEVERITY_NONE;
 
         std::ofstream log_file;
 
@@ -63,8 +63,6 @@ namespace rsimpl {
                 default: throw std::logic_error("not a valid severity for log message");
                 }
             }
-
-            std::cout << buffer << message << "\n";
         }
     };
 
