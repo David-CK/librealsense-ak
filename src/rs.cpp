@@ -58,3 +58,12 @@ int rs_get_api_version()
 const char * rs_get_failed_function(const rs_error * error) { return error ? error->function : nullptr; }
 const char * rs_get_failed_args(const rs_error * error) { return error ? error->args.c_str() : nullptr; }
 const char * rs_get_error_message(const rs_error * error) { return error ? error->message.c_str() : nullptr; }
+
+void rs_log_to_console(rs_log_severity min_severity, rs_error ** error)
+{
+    rsimpl::log_to_console(min_severity);
+}
+void rs_log_to_file(rs_log_severity min_severity, const char * file_path, rs_error ** error)
+{
+    rsimpl::log_to_file(min_severity, file_path);
+}

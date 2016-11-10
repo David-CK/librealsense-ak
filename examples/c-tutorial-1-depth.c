@@ -24,6 +24,10 @@ void check_error()
 
 int main()
 {
+    rs_log_to_console(RS_LOG_SEVERITY_DEBUG, &e);
+    check_error();
+    rs_log_to_file(RS_LOG_SEVERITY_DEBUG, "librealsense.log", &e);
+    check_error();
     /* Create a context object. This object owns the handles to all connected realsense devices. */
     rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();

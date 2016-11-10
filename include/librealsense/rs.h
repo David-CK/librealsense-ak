@@ -28,7 +28,7 @@ typedef enum rs_log_severity {
     RS_LOG_SEVERITY_FATAL, /* Indication of unrecoverable failure */
     RS_LOG_SEVERITY_NONE,  /* No logging will occur */
     RS_LOG_SEVERITY_COUNT
-} rs_log_serverity;
+} rs_log_severity;
 
 typedef struct rs_context rs_context;
 typedef struct rs_device rs_device;
@@ -73,6 +73,9 @@ int rs_get_api_version();
 const char * rs_get_failed_function  (const rs_error * error);
 const char * rs_get_failed_args      (const rs_error * error);
 const char * rs_get_error_message    (const rs_error * error);
+
+void rs_log_to_console(rs_log_severity min_severity, rs_error ** error);
+void rs_log_to_file(rs_log_severity min_severity, const char * file_path, rs_error ** error);
 
 #ifdef __cplusplus
 }
