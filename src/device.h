@@ -1,3 +1,5 @@
+#include <memory>
+
 struct rs_device_base : rs_device
 {
 //protected:
