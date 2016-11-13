@@ -6,9 +6,11 @@ Copyright(c) 2015 Intel Corporation. All Rights Reserved. */
 \*************************************************/
 
 /* First include the librealsense C header file */
+//#include <typeinfo>
 #include <librealsense/rs.h>
 #include <stdlib.h>
 #include <stdio.h>
+
 
 /* Function calls to librealsense may raise errors of type rs_error */
 rs_error * e = 0;
@@ -32,6 +34,7 @@ int main()
     rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();
     printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
+    //std::cout<<typeid(ctx).name()<<endl;
     check_error();
     if (rs_get_device_count(ctx, &e) == 0) return EXIT_FAILURE;
 

@@ -3,6 +3,8 @@
 
 #include "ds-device.h"
 
+//using namespace rsimpl;
+
 namespace rsimpl
 {
     std::shared_ptr<rs_device> make_r200_device(std::shared_ptr<uvc::device> device);

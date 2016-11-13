@@ -18,7 +18,7 @@ clean:
 	rm -rf obj
 	rm -rf lib
 	rm -rf bin
-	rm librealsense.log
+#	#rm librealsense.log
 
 obj lib bin:
 	mkdir obj

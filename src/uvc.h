@@ -1,3 +1,6 @@
+#ifndef LIBREALSENSE_UVC_H
+#define LIBREALSENSE_UVC_H
+
 #include "types.h"
 #include <memory>
 //inc
@@ -20,4 +23,6 @@ namespace rsimpl
         int get_product_id(const device & device);
     }
 }
+
+#endif
 
