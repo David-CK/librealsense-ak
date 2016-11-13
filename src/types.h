@@ -20,6 +20,13 @@
 //inc
 namespace rsimpl
 {
+    struct to_string
+    {
+        std::ostringstream ss;
+        template<class T> to_string & operator << (const T & val) {ss << val; return *this; }
+        operator std::string() const {return ss.str(); }
+    };
+
     ///////////////////////
     // Logging mechanism //
     ///////////////////////

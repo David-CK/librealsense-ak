@@ -68,7 +68,13 @@ const char * rs_get_device_serial(const rs_device * device, rs_error ** error);
  * \return            firmware version string, in a format is specific to device model
  */
 const char * rs_get_device_firmware_version(const rs_device * device, rs_error ** error);
-int rs_get_api_version();
+
+/**
+* retrieve the API version from the source code. Evaluate that the value is conformant to the established policies
+* \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+* \return            the version API encoded into integer value "1.9.3" -> 10903
+*/
+int          rs_get_api_version      (rs_error ** error);
 
 const char * rs_get_failed_function  (const rs_error * error);
 const char * rs_get_failed_args      (const rs_error * error);
