@@ -33,8 +33,9 @@ int main()
     /* Create a context object. This object owns the handles to all connected realsense devices. */
     rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();
-    printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
+//    printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
     //std::cout<<typeid(ctx).name()<<endl;
+#if 0
     check_error();
     if (rs_get_device_count(ctx, &e) == 0) return EXIT_FAILURE;
 
@@ -47,6 +48,8 @@ int main()
     check_error();
     printf("    Firmware version: %s\n", rs_get_device_firmware_version(dev, &e));
     check_error();
+#endif
     return 0;
+
 }
 

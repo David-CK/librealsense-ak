@@ -1,4 +1,7 @@
+LIBUSB_FLAGS := `pkg-config --cflags --libs libusb-1.0`
+
 CXXFLAGS := -std=c++11 -fPIC
+CXXFLAGS += $(LIBUSB_FLAGS)
 
 OBJECTS = $(notdir $(basename $(wildcard src/*.cpp)))
 OBJECTS := $(addprefix obj/, $(addsuffix .o, $(OBJECTS)))
@@ -38,7 +41,7 @@ bin/cpp-%: examples/cpp-%.cpp lib/librealsense.so | bin
 lib/librealsense.so: $(OBJECTS) | lib
 #-I
 #	#$(CXX) -Iinclude -shared $(OBJECTS) -o $@
-	$(CXX) -shared $(OBJECTS) -o $@
+	$(CXX) -shared $(OBJECTS) $(LIBUSB_FLAGS)-o $@
 
 obj/%.o: src/%.cpp | obj
 #-I

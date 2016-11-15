@@ -1,4 +1,4 @@
-#include <functional>
+//#include <functional>
 //#include <stdio.h>
 #include "context.h"
 
@@ -29,7 +29,7 @@ namespace rsimpl
     }
 }
 #define HANDLE_EXCEPTIONS_AND_RETURN(R, ...) catch(...) { std::ostringstream ss; rsimpl::stream_args(ss, #__VA_ARGS__, __VA_ARGS__); rsimpl::translate_exception(__FUNCTION__, ss.str(), error); return R; }
-#define VALIDATE_NOT_NULL(ARG) if(!(ARG)) throw std::runtime_error("null pointer passed for argument \"" #ARG "\"");
+//#define VALIDATE_NOT_NULL(ARG) if(!(ARG)) throw std::runtime_error("null pointer passed for argument \"" #ARG "\"");
 #define VALIDATE_RANGE(ARG, MIN, MAX) if((ARG) < (MIN) || (ARG) > (MAX)) { std::ostringstream ss; ss << "out of range value for argument \"" #ARG "\""; throw std::runtime_error(ss.str()); }
 
 int major(int version)
@@ -88,6 +88,7 @@ rs_context * rs_create_context(int api_version, rs_error ** error) try
 }
 HANDLE_EXCEPTIONS_AND_RETURN(nullptr, api_version)
 
+#if 0
 int rs_get_device_count(const rs_context * context, rs_error ** error)
 {
     VALIDATE_NOT_NULL(context);
@@ -114,6 +115,7 @@ const char * rs_get_device_firmware_version(const rs_device * device, rs_error *
     VALIDATE_NOT_NULL(device);
     return device->get_firmware_version();
 }
+#endif
 // Verify  and provide API version encoded as integer value
 int rs_get_api_version(rs_error ** error) try
 {

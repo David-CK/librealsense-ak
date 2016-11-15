@@ -4,6 +4,7 @@
 #include "uvc.h"
 #include <memory>
 
+#if 0
 struct rs_device_base : rs_device
 {
 //protected:
@@ -13,6 +14,7 @@ struct rs_device_base : rs_device
  //   const char *                                get_serial() const override {/* ss */ return "b"; }
   //  const char *                                get_firmware_version() const override {/*ss*/ return "c"; }
 };
+#endif
 
 //#endif
 

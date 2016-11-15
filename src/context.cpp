@@ -6,25 +6,23 @@
 //#include <string>
 */
 
-#include "uvc.h"
+//#include "uvc.h"
 #include "context.h"
+#if 0
 //inc
 #include "iostream"
 //inc
+#endif
 #include "r200.h"
 rs_context_base::rs_context_base()
 {
-    int i = 0;
-    //rsimpl::uvc::create_context();
-    for(auto device : rsimpl::uvc::query_devices())
+    context = rsimpl::uvc::create_context();
+
+    for(auto device : rsimpl::uvc::query_devices(context))
     {
-        printf("iiiiiiiiiii = %d\n", i);
-        std::cout << get_vendor_id(*device);
-        printf("\n");
-        std::cout << get_product_id(*device);
-        printf("\n");
         LOG_INFO("UVC device detected with VID = 0x" << std::hex << get_vendor_id(*device) << " PID = 0x" << get_product_id(*device));
-        printf("i = %d\n", i++);
+        if (get_vendor_id(*device) != VID_INTEL_CAMERA)
+            continue;
 
         std::shared_ptr<rs_device> rs_dev;
 
@@ -40,11 +38,13 @@ rs_context_base::rs_context_base()
 }
 
 rs_context* rs_context_base::instance = nullptr;
+
 rs_context* rs_context_base::acquire_instance()
 {
     instance = new rs_context_base();
     return instance;
 }
+#if 0
 size_t rs_context_base::get_device_count() const
 {
     return 10;
@@ -54,3 +54,4 @@ rs_device* rs_context_base::get_device(int index) const
 {
     //return devices[index].get();
 }
+#endif

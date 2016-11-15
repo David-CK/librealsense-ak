@@ -5,18 +5,15 @@
 #include "../include/librealsense/rscore.hpp"
 #include <vector>
 #include <sstream>
+//#include <mutex>
 //#include <memory>
+//#include <cstring>
 //inc
-#include <cassert>
-#include <cstring>
-#include <vector>
-#include <sstream>
-#include <mutex>
-#include <condition_variable>
-#include <memory>
-#include <atomic>
-#include <map>
-#include <algorithm>
+//#include <cassert>
+//#include <condition_variable>
+//#include <atomic>
+//#include <map>
+//#include <algorithm>
 //inc
 namespace rsimpl
 {
@@ -42,12 +39,13 @@ namespace rsimpl
 #define LOG_WARNING(...) LOG(RS_LOG_SEVERITY_WARN,  __VA_ARGS__)
 #define LOG_ERROR(...)   LOG(RS_LOG_SEVERITY_ERROR, __VA_ARGS__)
 #define LOG_FATAL(...)   LOG(RS_LOG_SEVERITY_FATAL, __VA_ARGS__)
-/*
+
     struct static_device_info
     {
         std::string name;                                                   // Model name of the camera
     };
 
+/*
     struct device_config
     {
         const static_device_info            info;
