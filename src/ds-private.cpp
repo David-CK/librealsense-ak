@@ -8,11 +8,15 @@
 #define NV_NON_FIRMWARE_START                       (SPI_FLASH_SECTORS_RESERVED_FOR_FIRMWARE * SPI_FLASH_SECTOR_SIZE_IN_BYTES)
 #define NV_CALIBRATION_DATA_ADDRESS_INDEX           0
 #define NV_NON_FIRMWARE_ROOT_ADDRESS                NV_NON_FIRMWARE_START
+#define CAM_INFO_BLOCK_LEN 2048
 
 namespace rsimpl
 {
     namespace ds
     {
+        bool read_device_pages(uvc::device & dev, uint32_t address, unsigned char * buffer, uint32_t nPages)
+        {
+        }
         void read_arbitrary_chunk(uvc::device & dev, uint32_t address, void * dataIn, int lengthInBytesIn)
         {
             unsigned char * data = (unsigned char *)dataIn;
@@ -28,7 +32,7 @@ namespace rsimpl
                 uint32_t lengthToCopy = SPI_FLASH_PAGE_SIZE_IN_BYTES - startInPage;
                 if (lengthToCopy > (uint32_t)lengthInBytes)
                     lengthToCopy = lengthInBytes;
-                memcpy(data, page + startInPage, lengthToCopy);
+                //memcpy(data, page + startInPage, lengthToCopy);
                 lengthInBytes -= lengthToCopy;
                 data += lengthToCopy;
                 startAddress += SPI_FLASH_PAGE_SIZE_IN_BYTES;
@@ -47,7 +51,7 @@ namespace rsimpl
                 data += (nPagesToRead * SPI_FLASH_PAGE_SIZE_IN_BYTES);
                 startAddress += (nPagesToRead * SPI_FLASH_PAGE_SIZE_IN_BYTES);
  //               read_device_page(dev, startAddress, page, 1);
-                memcpy(data, page, lengthInBytes);
+                //memcpy(data, page, lengthInBytes);
             }
         }
 
@@ -57,11 +61,75 @@ namespace rsimpl
             read_arbitrary_chunk(dev, NV_NON_FIRMWARE_ROOT_ADDRESS, adminSectorAddresses, NV_ADMIN_DATA_N_ENTRIES * sizeof(adminSectorAddresses[0]));
             //CKCKCK
         }
+
+        ds_calibration read_calibration_and_rectification_parameters(const uint8_t(&flash_data_buffer)[SPI_FLASH_SECTOR_SIZE_IN_BYTES])
+        {
+            struct RectifiedIntrinsics
+            {
+                big_endian<float> rfx, rfy;
+                big_endian<float> rpx, rpy;
+                big_endian<uint32_t> rw, rh;
+                operator rs_intrinsics () const { return{ (int)rw, (int)rh, rpx, rpy, rfx, rfy, RS_DISTORTION_NONE, {0,0,0,0,0} }; }
+            };
+
+            ds_calibration cameraCalib = {};
+            cameraCalib.version = reinterpret_cast<const big_endian<uint32_t> &>(flash_data_buffer);
+            if (cameraCalib.version == 0)
+            {
+                struct CameraCalibrationParametersV0
+                {
+                    enum { MAX_INTRIN_RIGHT = 2 };      ///< Max number right cameras supported (e.g. one or two, tow would support a multi-basline unit)
+                    enum { MAX_MODES_LR = 4 };      ///< Max number rectified LR resolution modes the structure supports (e.g. 640x480, 492x372 and 332x252)
+                    RectifiedIntrinsics modesLR[MAX_INTRIN_RIGHT][MAX_MODES_LR];
+                };
+                const auto & calib = reinterpret_cast<const CameraCalibrationParametersV0 &>(flash_data_buffer);
+                for (int i = 0; i < 3; ++i) cameraCalib.modesLR[i] = calib.modesLR[0][i];
+                //CKCK
+            }
+        }
+
+        ds_head_content read_camera_head_contents(const uint8_t(&flash_data_buffer)[SPI_FLASH_SECTOR_SIZE_IN_BYTES], uint32_t & serial_number)
+        {
+            //auto header = reinterpret_cast<const CameraHeadContents &>(flash_data_buffer[CAM_INFO_BLOCK_LEN]);
+            ds_head_content head_content = reinterpret_cast<const ds_head_content &>(flash_data_buffer[CAM_INFO_BLOCK_LEN]);
+
+            serial_number = head_content.serial_number;
+
+            LOG_INFO("Serial number                       = " << head_content.serial_number);
+            LOG_INFO("Model number                        = " << head_content.imager_model_number);
+            LOG_INFO("Revision number                     = " << head_content.module_revision_number);
+            LOG_INFO("Camera head contents version        = " << head_content.camera_head_contents_version);
+            if (head_content.camera_head_contents_version != ds_head_content::DS_HEADER_VERSION_NUMBER) LOG_WARNING("Camera head contents version != 12, data may be missing/incorrect");
+            LOG_INFO("Module version                      = " << (int)head_content.module_version << "." << (int)head_content.module_major_version << "." << (int)head_content.module_minor_version << "." << (int)head_content.module_skew_version);
+            LOG_INFO("OEM ID                              = " << head_content.oem_id);
+            LOG_INFO("Lens type for left/right images     = " << head_content.lens_type);
+            LOG_INFO("Lens type for third imager          = " << head_content.lens_type_third_imager);
+            LOG_INFO("Lens coating for left/right imagers = " << head_content.lens_coating_type);
+            LOG_INFO("Lens coating for third imager       = " << head_content.lens_coating_type_third_imager);
+            LOG_INFO("Nominal baseline (left to right)    = " << head_content.nominal_baseline << " mm");
+            LOG_INFO("Nominal baseline (left to third)    = " << head_content.nominal_baseline_third_imager << " mm");
+            LOG_INFO("Built on "        << time_to_string(head_content.build_date)          << " UTC");
+            LOG_INFO("Calibrated on "   << time_to_string(head_content.calibration_date)    << " UTC");
+            return head_content;
+        }
+
         ds_info read_camera_info(uvc::device & device)
         {
             uint8_t flashDataBuffer[SPI_FLASH_SECTOR_SIZE_IN_BYTES];
             if (!read_admin_sector(device, flashDataBuffer, NV_CALIBRATION_DATA_ADDRESS_INDEX)) throw std::runtime_error("Could not read calibration secotr");
-            //CKCKCK
+
+            ds_info cam_info = {};
+
+            try
+            {
+                cam_info.calibration = read_calibration_and_rectification_parameters(flashDataBuffer);
+                cam_info.head_content = read_camera_head_contents(flashDataBuffer, cam_info.calibration.serial_number);
+            }
+            catch (std::runtime_error &err){ LOG_ERROR("Failed to read camera info " << err.what()); }
+            catch (...){ LOG_ERROR("Failed to read camera info, may not work correctly"); }
+
+            return cam_info;
         }
     }
 }
+

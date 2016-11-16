@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 //#include <algorithm>
-//#include <ctime>
+#include <ctime>
 
 namespace rsimpl {
     class logger_type {

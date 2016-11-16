@@ -20,6 +20,11 @@ extern "C" {
 /* Return version in "X.Y.Z" format */
 //#define RS_API_VERSION_STR (VAR_ARG_STRING(RS_API_MAJOR_VERSION.RS_API_MINOR_VERSION.RS_API_PATCH_VERSION))
 
+typedef enum rs_distortion
+{
+    RS_DISTORTION_NONE// ck
+} rs_distortion;
+
 typedef enum rs_log_severity {
     RS_LOG_SEVERITY_DEBUG, /* Detailed information about ordinary operations */
     RS_LOG_SEVERITY_INFO,  /* Terse information about ordinary operations */
@@ -29,6 +34,18 @@ typedef enum rs_log_severity {
     RS_LOG_SEVERITY_NONE,  /* No logging will occur */
     RS_LOG_SEVERITY_COUNT
 } rs_log_severity;
+
+typedef struct rs_intrinsics
+{
+    int           width;     /* width of the image in pixels */
+    int           height;    /* height of the image in pixels */
+    float         ppx;       /* horizontal coordinate of the principal point of the image, as a pixel ofset from the left edge */
+    float         ppy;       /* vertical coordiante of the principal point of the image, as a pixel offset from the top edge */
+    float         fx;        /* focal length of the image plane, as a multiple of pixel width */
+    float         fy;        /* focal length of the image plane, as a multiple of pixel height */
+    rs_distortion model;     /* distortion model of the image */
+    float         coeffs[5]; /* distortion coefficients */
+} rs_intrinsics;
 
 typedef struct rs_context rs_context;
 //typedef struct rs_device rs_device;

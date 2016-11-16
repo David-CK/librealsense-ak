@@ -5,12 +5,12 @@
 #include "../include/librealsense/rscore.hpp"
 #include <vector>
 #include <sstream>
+#include <condition_variable>
 //#include <mutex>
 //#include <memory>
 //#include <cstring>
 //inc
 //#include <cassert>
-//#include <condition_variable>
 //#include <atomic>
 //#include <map>
 //#include <algorithm>
@@ -22,6 +22,18 @@ namespace rsimpl
         std::ostringstream ss;
         template<class T> to_string & operator << (const T & val) {ss << val; return *this; }
         operator std::string() const {return ss.str(); }
+    };
+
+    template<class T> class big_endian
+    {
+        T be_value;
+    public:
+        operator T () const
+        {
+            T le_value = 0;
+            for (unsigned int i = 0; i < sizeof(T); ++i) reinterpret_cast<char *>(&le_value)[i] = reinterpret_cast<const char *>(&be_value)[sizeof(T) -i - 1];
+            return le_value;
+        }
     };
 
     ///////////////////////
