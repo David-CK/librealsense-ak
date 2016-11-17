@@ -11,6 +11,9 @@ namespace rsimpl
             int version;
             uint32_t serial_number;
             rs_intrinsics modesLR[3];
+            rs_intrinsics intrinsicsThird[2];
+            rs_intrinsics modesThird[2][2];
+            float Rthird[9], T[3], B;
         };
 
         enum ds_lens_type : uint32_t

@@ -22,7 +22,8 @@ extern "C" {
 
 typedef enum rs_distortion
 {
-    RS_DISTORTION_NONE// ck
+    RS_DISTORTION_NONE,// ck
+    RS_DISTORTION_MODIFIED_BROWN_CONRADY//,
 } rs_distortion;
 
 typedef enum rs_log_severity {
