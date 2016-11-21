@@ -20,6 +20,8 @@ const uint8_t RS_STREAM_NATIVE_COUNT    = 5;
 
 namespace rsimpl
 {
+    typedef uint8_t byte;
+
     struct to_string
     {
         std::ostringstream ss;
@@ -54,7 +56,39 @@ namespace rsimpl
 #define LOG_WARNING(...) LOG(RS_LOG_SEVERITY_WARN,  __VA_ARGS__)
 #define LOG_ERROR(...)   LOG(RS_LOG_SEVERITY_ERROR, __VA_ARGS__)
 #define LOG_FATAL(...)   LOG(RS_LOG_SEVERITY_FATAL, __VA_ARGS__)
+    struct int2 {int x,y; };
 
+    struct pixel_format_unpacker
+    {
+        bool requires_processing;
+        void(*unpack)(byte * const dest[], const byte * soucrce, int count);
+        std::vector<std::pair<rs_stream, rs_format>> outputs;
+
+        //bool
+        //rs_
+    };
+
+    struct native_pixel_format
+    {
+        uint32_t fourcc;
+        int plane_count;
+        size_t bytes_per_pixel;
+        std::vector<pixel_format_unpacker> unpackers;
+
+    //    size_t get_image_size(int width, int height) const { return width * height * plane_count * bytes_per_pixel; }
+
+    };
+
+    struct subdevice_mode
+    {
+        int subdevice;                          // 0, 1, 2, etc...
+        int2 native_dims;                       // Resolution advertised over UVC
+        native_pixel_format pf;                 // Pixel format advertised over UVC
+        int fps;                                // Framerate advertised over UVC
+        rs_intrinsics native_intrinsics;        // Intrinsics struct corresponding to the content of image (Note: width,height may be subset of native_dims)
+        std::vector<rs_intrinsics> rect_modes;  // Potential intrinsics of image after being rectified in software by librealsense
+        std::vector<int> pad_crop_options;      // Acceptable padding/cropping values
+    };
     class firmware_version
     {
 /*
@@ -84,6 +118,7 @@ namespace rsimpl
     {
         std::string name;                                                   // Model name of the camera
         int stream_subdevices[RS_STREAM_NATIVE_COUNT];
+        std::vector<subdevice_mode> subdevice_modes;                        // A list of available modes each subdevice can be put into
         std::vector<supported_capability> capabilities_vector;
     };
 

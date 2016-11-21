@@ -53,6 +53,25 @@ typedef enum rs_stream
     RS_STREAM_COUNT
 } rs_stream;
 
+typedef enum rs_format
+{
+    RS_FORMAT_ANY         ,
+    RS_FORMAT_Z16         , /**< 16 bit linear depth values. The depth is meters is equal to depth scale * pixel value */
+    RS_FORMAT_DISPARITY16 , /**< 16 bit linear disparity values. The depth in meters is equal to depth scale / pixel value */
+    RS_FORMAT_XYZ32F      , /**< 32 bit floating point 3D coordinates. */
+    RS_FORMAT_YUYV        ,
+    RS_FORMAT_RGB8        ,
+    RS_FORMAT_BGR8        ,
+    RS_FORMAT_RGBA8       ,
+    RS_FORMAT_BGRA8       ,
+    RS_FORMAT_Y8          ,
+    RS_FORMAT_Y16         ,
+    RS_FORMAT_RAW10       , /**< Four 10-bit luminance values encoded into a 5-byte macropixel */
+    RS_FORMAT_RAW16       ,
+    RS_FORMAT_RAW8        ,
+    RS_FORMAT_COUNT
+} rs_format;
+
 typedef enum rs_distortion
 {
     RS_DISTORTION_NONE,// ck
