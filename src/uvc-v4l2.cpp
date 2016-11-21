@@ -2,18 +2,19 @@
 // Copyright(c) 2015 Intel Corporation. All Rights Reserved.
 
 #include "uvc.h"
-#include <libusb.h>
-#include <regex>
+
+#include <cstring>
 #include <fstream>
-#include <sys/stat.h>
+#include <regex>
 #include <dirent.h>
 #include <fcntl.h>
-#include <cstring>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <linux/usb/video.h>
+#include <linux/uvcvideo.h>
 #include <linux/videodev2.h>
-//#include <linux/usb/video.h>
-//#include <linux/uvcvideo.h>
+#include <libusb.h>
 
 //#include <sstream>
 //#include <iostream>
@@ -151,6 +152,18 @@ namespace rsimpl
 
             int get_vid() const { return vid; }
             int get_pid() const { return pid; }
+
+            void get_control(const extension_unit & xu, uint8_t control, void * data, size_t size)
+            {
+            uvc_xu_control_query q = {static_cast<uint8_t>(xu.unit), control, UVC_GET_CUR, static_cast<uint16_t>(size), reinterpret_cast<uint8_t *>(data)};
+                if(xioctl(fd, UVCIOC_CTRL_QUERY, &q) < 0) throw_error("UVCIOC_CTRL_QUERY:UVC_GET_CUR");
+            }
+
+            void set_control(const extension_unit & xu, uint8_t control, void * data, size_t size)
+            {
+            uvc_xu_control_query q = {static_cast<uint8_t>(xu.unit), control, UVC_SET_CUR, static_cast<uint16_t>(size), reinterpret_cast<uint8_t *>(data)};
+                if(xioctl(fd, UVCIOC_CTRL_QUERY, &q) < 0) throw_error("UVCIOC_CTRL_QUERY:UVC_SET_CUR");
+            }
         };
 
         struct device
@@ -162,6 +175,15 @@ namespace rsimpl
 
         int get_vendor_id(const device & device) { return device.subdevices[0]->get_vid(); }
         int get_product_id(const device & device) { return device.subdevices[0]->get_pid(); }
+
+        void get_control(const device & device, const extension_unit & xu, uint8_t ctrl, void * data, int len)
+        {
+            device.subdevices[xu.subdevice]->get_control(xu, ctrl, data, len);
+        }
+        void set_control(device & device, const extension_unit & xu, uint8_t ctrl, void * data, int len)
+        {
+            device.subdevices[xu.subdevice]->set_control(xu, ctrl, data, len);
+        }
 
         std::shared_ptr<context> create_context()
         {

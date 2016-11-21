@@ -3,6 +3,7 @@
 
 #include "../include/librealsense/rs.h"
 #include "../include/librealsense/rscore.hpp"
+#include <cstring>
 #include <vector>
 #include <sstream>
 #include <condition_variable>
@@ -15,6 +16,8 @@
 //#include <map>
 //#include <algorithm>
 //inc
+const uint8_t RS_STREAM_NATIVE_COUNT    = 5;
+
 namespace rsimpl
 {
     struct to_string
@@ -52,9 +55,36 @@ namespace rsimpl
 #define LOG_ERROR(...)   LOG(RS_LOG_SEVERITY_ERROR, __VA_ARGS__)
 #define LOG_FATAL(...)   LOG(RS_LOG_SEVERITY_FATAL, __VA_ARGS__)
 
+    class firmware_version
+    {
+/*
+        int m_major, m_minor, m_patch, m_build;
+        bool is_any;
+        std::string string_representation;
+
+        std::string to_string() const;
+
+    public:
+        firmware_version() : m_major(0), m_minor(0), m_patch(0), m_build(0), is_any(true), string_representation(to_string()) {}
+*/
+    };
+
+    struct supported_capability
+    {
+        rs_capabilities    capability;
+        firmware_version   from;
+        firmware_version   until;
+        rs_camera_info     firmware_type;
+
+        supported_capability(rs_capabilities capability)
+            : capability(capability), from(), until(), firmware_type(RS_CAMERA_INFO_CAMERA_FIRMWARE_VERSION) {}
+    };
+
     struct static_device_info
     {
         std::string name;                                                   // Model name of the camera
+        int stream_subdevices[RS_STREAM_NATIVE_COUNT];
+        std::vector<supported_capability> capabilities_vector;
     };
 
 /*
