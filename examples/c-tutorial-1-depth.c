@@ -33,9 +33,7 @@ int main()
     /* Create a context object. This object owns the handles to all connected realsense devices. */
     rs_context * ctx = rs_create_context(RS_API_VERSION, &e);
     check_error();
-//    printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
-    //std::cout<<typeid(ctx).name()<<endl;
-#if 0
+    printf("There are %d connected RealSense devices.\n", rs_get_device_count(ctx, &e));
     check_error();
     if (rs_get_device_count(ctx, &e) == 0) return EXIT_FAILURE;
 
@@ -48,7 +46,14 @@ int main()
     check_error();
     printf("    Firmware version: %s\n", rs_get_device_firmware_version(dev, &e));
     check_error();
-#endif
+
+    rs_stream stream_type = RS_STREAM_DEPTH;
+    /* Configure depth to run at VGA resolution at 30 frames per second */
+    rs_enable_stream(dev, RS_STREAM_DEPTH, 0, 0, RS_FORMAT_Z16, 30, &e);
+    check_error();
+    rs_start_device(dev, &e);
+    check_error();
+
     return 0;
 
 }

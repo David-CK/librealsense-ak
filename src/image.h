@@ -5,6 +5,7 @@
 #define LIBREALSENSE_IMAGE_H
 
 #include "types.h"
+
 namespace rsimpl
 {
     extern const native_pixel_format pf_raw8;       // Four 8 bit luminance
@@ -13,7 +14,7 @@ namespace rsimpl
     extern const native_pixel_format pf_yuy2;       // Y0 U Y1 V ordered chroma subsampled macropixel
     extern const native_pixel_format pf_y8;         // 8 bit (left) IR image
     extern const native_pixel_format pf_y8i;        // 8 bits left IR + 8 bits right IR per pixel
-    extern const native_pixel_format pf_y16;        // 16 bit left IR image
+    extern const native_pixel_format pf_y16;        // 16 bit (left) IR image
     extern const native_pixel_format pf_y12i;       // 12 bits left IR + 12 bits right IR per pixel
     extern const native_pixel_format pf_z16;        // 16 bit Z image
     extern const native_pixel_format pf_invz;       // 16 bit Z image

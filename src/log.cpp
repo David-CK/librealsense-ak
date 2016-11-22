@@ -43,8 +43,8 @@ namespace rsimpl {
                 switch (severity)
                 {
                 case RS_LOG_SEVERITY_DEBUG: log_file << buffer << " DEBUG: " << message << "\n"; break;
-                case RS_LOG_SEVERITY_INFO: log_file << buffer << " INFO: " << message << "\n"; break;
-                case RS_LOG_SEVERITY_WARN: log_file << buffer << " WARN: " << message << "\n"; break;
+                case RS_LOG_SEVERITY_INFO:  log_file << buffer << " INFO: " << message << "\n"; break;
+                case RS_LOG_SEVERITY_WARN:  log_file << buffer << " WARN: " << message << "\n"; break;
                 case RS_LOG_SEVERITY_ERROR: log_file << buffer << " ERROR: " << message << "\n"; break;
                 case RS_LOG_SEVERITY_FATAL: log_file << buffer << " FATAL: " << message << "\n"; break;
                 default: throw std::logic_error("not a valid severity for log message");
@@ -56,13 +56,14 @@ namespace rsimpl {
                 switch (severity)
                 {
                 case RS_LOG_SEVERITY_DEBUG: std::cout << "rs.debug: " << message << "\n"; break;
-                case RS_LOG_SEVERITY_INFO: std::cout << "rs.info: " << message << "\n"; break;
-                case RS_LOG_SEVERITY_WARN: std::cout << "rs.warn: " << message << "\n"; break;
+                case RS_LOG_SEVERITY_INFO:  std::cout << "rs.info: " << message << "\n"; break;
+                case RS_LOG_SEVERITY_WARN:  std::cout << "rs.warn: " << message << "\n"; break;
                 case RS_LOG_SEVERITY_ERROR: std::cout << "rs.error: " << message << "\n"; break;
                 case RS_LOG_SEVERITY_FATAL: std::cout << "rs.fatal: " << message << "\n"; break;
                 default: throw std::logic_error("not a valid severity for log message");
                 }
             }
+
         }
     };
 

@@ -1,3 +1,6 @@
+// License: Apache 2.0. See LICENSE file in root directory.
+// Copyright(c) 2016 Intel Corporation. All Rights Reserved.
+
 #ifndef LIBREALSENSE_DS_PRIVATE_H
 #define LIBREALSENSE_DS_PRIVATE_H
 
@@ -57,6 +60,7 @@ namespace rsimpl
         }
 
 #pragma pack(push,1)
+        /// The struct is aligned with the data layout in device
         struct ds_head_content
         {
             enum { DS_HEADER_VERSION_NUMBER = 12 };               // required camera header version number for DS devices
@@ -65,8 +69,8 @@ namespace rsimpl
             uint32_t        module_revision_number;
             uint8_t         ck__model_data[64];
             double          build_date;
-            double          ck__first_program_date;
-            double          ck__focus_alignment_date;
+            double          first_program_date;
+            double          focus_alignment_date;
             int32_t         nominal_baseline_third_imager;
             uint8_t         module_version;
             uint8_t         module_major_version;
@@ -76,12 +80,12 @@ namespace rsimpl
             ds_oem_id       oem_id;
             ds_lens_coating_type lens_coating_type_third_imager;
             uint8_t         ck__platform_camera_support;
-            ds_prq_type     ck__prq_type;
+            ds_prq_type     prq_type;
             uint8_t         ck__reserved1[2];
-            ds_emitter_type ck__emitter_type;
+            ds_emitter_type emitter_type;
             uint8_t         ck__reserved2[4];
             uint32_t        ck__camera_fpag_version;
-            uint32_t        ck__platform_camera_focus;
+            uint32_t        platform_camera_focus;                  // This is the value during calibration
             double          calibration_date;
             uint32_t        ck__calibration_type;
             double          ck__calibration_x_error;
@@ -129,6 +133,7 @@ namespace rsimpl
             uint32_t        ck_the_last_word;
             uint8_t         ck_reserved3[37];
         };
+
 #pragma pack(pop)
 
         struct ds_info
@@ -136,11 +141,21 @@ namespace rsimpl
             ds_head_content head_content;
             ds_calibration calibration;
         };
+
+
         ds_info read_camera_info(uvc::device & device);
+        std::string read_firmware_version(uvc::device & device);
+        std::string read_isp_firmware_version(uvc::device & device);
         enum class control
         {
             command_response           = 1,
         };
+        class time_pad
+        {
+            std::chrono::high_resolution_clock::duration _duration;
+        public:
+            time_pad(std::chrono::high_resolution_clock::duration duration) : _duration(duration) {}
+        };
     }
 }
-#endif
+#endif // DS_PRIVATE_H

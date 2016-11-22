@@ -6,6 +6,7 @@
 enum class command : uint32_t // Command/response codes
 {
     download_spi_flash = 0x1A,
+    get_fwrevision     = 0x21
 };
 
 enum class command_modifier : uint32_t { direct = 0x10 }; // Command/response modifiers
@@ -65,7 +66,7 @@ namespace rsimpl {
             // This command allows the host to read a block of data from the SPI flash.
             // Once this command is processed by the DS4, further command messages will be treated as SPI data
             // and therefore will be read from flash. The size of the SPI data must be a multiple of 256 bytes.
-            // This will repeat until the number of bytes specified in the 'value' field of the original command
+            // This will repeat until the number of bytes specified in the ‘value’ field of the original command
             // message has been read.  At that point the DS4 will process command messages as expected.
 
             send_command_and_receive_response(dev, CommandResponsePacket(command::download_spi_flash, address, nPages * SPI_FLASH_PAGE_SIZE_IN_BYTES));
@@ -130,6 +131,7 @@ namespace rsimpl {
                 uint32_t pageAddressInBytes = adminSectorAddresses[whichAdminSector];
                 return read_device_pages(dev, pageAddressInBytes, data, SPI_FLASH_PAGES_PER_SECTOR);
             }
+
             return false;
         }
 
@@ -268,6 +270,19 @@ namespace rsimpl {
 
             return cam_info;
         }
-    }
+
+        std::string read_firmware_version(uvc::device & device)
+        {
+            auto response = send_command_and_receive_response(device, CommandResponsePacket(command::get_fwrevision));
+            return reinterpret_cast<const char *>(response.reserved);
+        }
+
+        std::string read_isp_firmware_version(uvc::device & device)
+        {
+            auto response = send_command_and_receive_response(device, CommandResponsePacket(command::get_fwrevision));
+            return to_string() << "0x" << std::hex << response.reserved[4];
+        }
+
+    } // namespace rsimpl::ds
 }
 

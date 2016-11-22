@@ -1,9 +1,12 @@
+// License: Apache 2.0. See LICENSE file in root directory.
+// Copyright(c) 2015 Intel Corporation. All Rights Reserved.
+
 #ifndef LIBREALSENSE_UVC_H
 #define LIBREALSENSE_UVC_H
 
 #include "types.h"
 
-#include <memory>
+#include <memory>       // For shared_ptr
 //#include <functional>
 #include <thread>       // For this_thread::sleep_for
 
@@ -58,4 +61,3 @@ namespace rsimpl
 }
 
 #endif
-

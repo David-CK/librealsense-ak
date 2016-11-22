@@ -224,14 +224,12 @@ namespace rsimpl
                 std::string path = "/sys/class/video4linux/" + name;
                 char buff[PATH_MAX];
                 ssize_t len = ::readlink(path.c_str(), buff, sizeof(buff)-1);
-                if (len != -1)
+                if (len != -1) 
                 {
                     buff[len] = '\0';
                     std::string real_path = std::string(buff);
                     if (real_path.find("virtual") != std::string::npos)
-                    {
                         continue;
-                    }
                 }
 
                 try
@@ -254,18 +252,18 @@ namespace rsimpl
             for(auto & sub : subdevices)
             {
                 bool is_new_device = true;
-                for(auto & dev: devices)
+                for(auto & dev : devices)
                 {
                     if(sub->busnum == dev->subdevices[0]->busnum && sub->devnum == dev->subdevices[0]->devnum)
                     {
-                       dev->subdevices.push_back(move(sub));
-                       is_new_device = false;
-                       break;
+                        dev->subdevices.push_back(move(sub));
+                        is_new_device = false;
+                        break;
                     }
                 }
                 if(is_new_device)
                 {
-                    if(sub->vid == VID_INTEL_CAMERA && sub->pid == ZR300_FISHEYE_PID)  // avoid inserting fisheye camera as a device
+                    if (sub->vid == VID_INTEL_CAMERA && sub->pid == ZR300_FISHEYE_PID)  // avoid inserting fisheye camera as a device
                         continue;
                     devices.push_back(std::make_shared<device>());
                     devices.back()->subdevices.push_back(move(sub));
@@ -281,14 +279,16 @@ namespace rsimpl
                 });
             }
 
+
             // Insert fisheye camera as subDevice of ZR300
             for(auto & sub : subdevices)
             {
                 if (!sub)
                     continue;
+
                 for(auto & dev : devices)
                 {
-                    if (dev->subdevices[0]->vid == VID_INTEL_CAMERA && dev->subdevices[0]->pid == ZR300_CX3_PID &&
+                    if (dev->subdevices[0]->vid == VID_INTEL_CAMERA && dev->subdevices[0]->pid == ZR300_CX3_PID && 
                         sub->vid == VID_INTEL_CAMERA && sub->pid == ZR300_FISHEYE_PID && dev->subdevices[0]->parent_devnum == sub->parent_devnum)
                     {
                         dev->subdevices.push_back(move(sub));
@@ -317,9 +317,10 @@ namespace rsimpl
                         if (parent_device)
                         {
                             int parent_devnum = libusb_get_device_address(libusb_get_parent(usb_device));
+
                             // First, handle the special case of FishEye
                             bool bFishEyeDevice = ((busnum == dev->subdevices[3]->busnum) && (parent_devnum == dev->subdevices[3]->parent_devnum));
-                            if (bFishEyeDevice && !dev->usb_device)
+                            if(bFishEyeDevice && !dev->usb_device)
                             {
                                 dev->usb_device = usb_device;
                                 libusb_ref_device(usb_device);
@@ -327,7 +328,8 @@ namespace rsimpl
                             }
                         }
                     }
-                    if (busnum == dev->subdevices[0]->busnum && devnum == dev->subdevices[0]->devnum)
+
+                    if(busnum == dev->subdevices[0]->busnum && devnum == dev->subdevices[0]->devnum)
                     {
                         if (!dev->usb_device) // do not override previous configuration
                         {
@@ -335,7 +337,7 @@ namespace rsimpl
                             libusb_ref_device(usb_device);
                             break;
                         }
-                    }
+                    }                    
                 }
             }
             libusb_free_device_list(list, 1);
